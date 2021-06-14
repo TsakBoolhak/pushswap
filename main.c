@@ -252,7 +252,7 @@ void	ft_prepare_pb(t_list *lst[2], size_t size[2])
 	int	index;
 
 	index = ft_search_for_lowest(lst[0], *(int *)(lst[1]->content));
-	if (index > (int)(size[0] / 2))
+	if (index > (int)(size[0] / 2 + size[0] % 2))
 	{
 		index = (int)(size[0]) - index;
 		while (index)
