@@ -1,7 +1,7 @@
 #! /bin/bash
 
 max=0
-test_nb=1000
+test_nb=100000
 value_nb=100
 min_val=0
 max_val=5000
