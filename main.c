@@ -635,7 +635,7 @@ int	main(int ac, char *av[])
 	}
 	else
 	{
-		chunk_size = size[0] / (size[0] / 25);
+		chunk_size = size[0] / /*(size[0] / 12)*/ 7;
 		chunk_nb = arr_size / chunk_size + (arr_size % chunk_size != 0);
 		chunk_i = 1;
 		while (chunk_i <= chunk_nb)
