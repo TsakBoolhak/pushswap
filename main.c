@@ -348,13 +348,15 @@ int	ft_search_for_highest(t_list *lst, int nb)
 	int index;
 	int	result;
 
+//	printf("nb to insert %d\n", nb);
 	result = 1;
 	index = 1;
 	highest = ft_get_min(lst, &result);
 //	printf("highest = %d, nb = %d\n", highest, nb);
 	if (highest > nb)
+//	{
 		highest = ft_get_max(lst, &result); 
-//	printf("nb to insert %d\n", nb);
+//	}
 //	printf("search lowest : highest at start %d result %d\n", highest, result);
 	while (lst)
 	{
@@ -366,7 +368,7 @@ int	ft_search_for_highest(t_list *lst, int nb)
 		index++;
 		lst = lst->next;
 	}
-//	printf("search highet : highest at end %d result %d\n", highest, result);
+//	printf("search highest : highest at end %d result %d\n", highest, result);
 	return (result);
 }
 
@@ -414,9 +416,10 @@ int	ft_prepare_pb(t_list *lst[3], size_t size[2])
 	if (index > (int)(size[1] / 2 + size[1] % 2))
 	{
 		index = (int)(size[1]) - index + 1;
+//		printf("index = %d\n", index);
 		while (index > 0)
 		{
-//			printf("index = %d\n", index);
+//			printf("rra\n");
 			if (ft_reverse_rotate_b(lst))
 				return (1);
 			index--;
@@ -426,6 +429,7 @@ int	ft_prepare_pb(t_list *lst[3], size_t size[2])
 	{
 		while (index > 1)
 		{
+//			printf("ra\n");
 			if (ft_rotate_b(lst))
 				return (1);
 			index--;
@@ -562,13 +566,13 @@ void	ft_print_array(int *arr, int size)
 	}
 }
 
-int	ft_pick_from_start(t_list *lst, int *arr, int chunk_i, int chunk_size)
+int	ft_pick_from_start(t_list *lst, int *arr, int chunk_i, int chunk_size, int chunk_size_origin)
 {
 	int	start;
 	int	end;
 	int	ret;
 
-	start = ((chunk_i - 1) * chunk_size);
+	start = ((chunk_i - 1) * chunk_size_origin);
 	end = start + chunk_size;
 	ret = 1;
 	while (lst)
@@ -586,14 +590,14 @@ int	ft_pick_from_start(t_list *lst, int *arr, int chunk_i, int chunk_size)
 	return (0);
 }
 
-int	ft_pick_from_end(t_list *lst, int *arr, int chunk_i, int chunk_size)
+int	ft_pick_from_end(t_list *lst, int *arr, int chunk_i, int chunk_size, int chunk_size_origin)
 {
 	int	start;
 	int	end;
 	int	i;
 	int	ret;
 
-	start = ((chunk_i - 1) * chunk_size);
+	start = ((chunk_i - 1) * chunk_size_origin);
 	end = start + chunk_size;
 	ret = 0;
 	i = 1;
@@ -626,6 +630,7 @@ int	main(int ac, char *av[])
 	int		chunk_nb;
 	int		chunk_i;
 	int		chunk_size;
+	int		chunk_size_origin;
 	int		first_chosen;
 	int		last_chosen;
 
@@ -719,20 +724,23 @@ int	main(int ac, char *av[])
 			return (0);
 		}
 		if (size[0] < 250)
-			chunk_size = size[0] / 7 + (size[0] / 7 < 1);
+			chunk_size = (int)(size[0]) / 7 + ((int)(size[0]) / 7 < 1);
 		else
 			chunk_size = size[0] / 14;
+		chunk_size_origin= chunk_size;
 		chunk_nb = arr_size / chunk_size + (arr_size % chunk_size != 0);
+//		printf("size[0] = %zu, chunk_nb = %d chunk_size = %d(at begin)\n", size[0], chunk_nb, chunk_size);
 		chunk_i = 1;
 		while (chunk_i <= chunk_nb)
 		{
 			if (chunk_i == chunk_nb && arr_size % chunk_size)
 				chunk_size = arr_size % chunk_size;
-			first_chosen = ft_pick_from_start(lst[0], arr, chunk_i, chunk_size);
-			last_chosen = ft_pick_from_end(lst[0], arr, chunk_i, chunk_size);
+			first_chosen = ft_pick_from_start(lst[0], arr, chunk_i, chunk_size, chunk_size_origin);
+			last_chosen = ft_pick_from_end(lst[0], arr, chunk_i, chunk_size, chunk_size_origin);
 //			printf("first %d last %d chunk_i %d chunk_nb %d chunk_size %d\n", first_chosen, last_chosen, chunk_i, chunk_nb, chunk_size);
 			if (first_chosen == 0)
 			{
+//				printf("when passing to next chun_i : chunk_i = %d, chunk_size = %d, size[0] = %zu\n", chunk_i, chunk_size, size[0]);
 				chunk_i++;
 				continue ;
 			}
@@ -782,6 +790,7 @@ int	main(int ac, char *av[])
 		}
 
 
+//		printf("size[0] = %zu, chunk_size = %d\n", size[0], chunk_size);
 //		printf("last move\n");
 		ft_search_minmax(lst[1], &chunk_i, &chunk_nb);
 		if (chunk_nb > (int)(size[1] / 2 + size[1] % 2))
@@ -1062,6 +1071,10 @@ int	main(int ac, char *av[])
 	printf("list b's size : %zu\n", size[1]);
 	*/
 
+//	printf("Before factoring the instructions list :\n");
+//	ft_lstiter(lst[2], &ft_print_str_data);
+//	printf("After factoring the instructions list :\n");
+//	ft_factorise_instruction(&lst[2]);
 	ft_lstiter(lst[2], &ft_print_str_data);
 	free(arr);
 	ft_lstclear(&lst[0], &free);
