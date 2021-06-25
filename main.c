@@ -619,6 +619,164 @@ int	ft_pick_from_end(t_list *lst, int *arr, int chunk_i, int chunk_size, int chu
 	return (ret);
 }
 
+void	ft_factorise_cancel_push(t_list **alst)
+{
+	t_list	*lst;
+	t_list	*tmp;
+
+	if (!alst || !*alst)
+		return ;
+	lst = *alst;
+	while (lst->next)
+	{
+		if (!ft_strcmp(lst->content, "pb"))
+		{
+			tmp = lst->next;
+			while (tmp && (!ft_strcmp(tmp->content, "pa") || !ft_strcmp(tmp->content, "pb")))
+			{
+				if (!ft_strcmp(tmp->content, "pa"))
+				{
+					ft_lstdelone(alst, tmp, &free);
+					tmp = lst;
+					lst = lst->next;
+					ft_lstdelone(alst, tmp, &free);
+					break ;
+				}
+				tmp = tmp->next;
+			}
+		}
+		lst = lst->next;
+	}
+}
+
+void	ft_factorise_rotate(t_list **alst)
+{
+	t_list	*lst;
+	t_list	*tmp;
+	char	*str;
+
+	if (!alst || !*alst)
+		return ;
+	lst = *alst;
+	while (lst->next)
+	{
+		if (!ft_strcmp(lst->content, "ra"))
+		{
+			tmp = lst->next;
+			while (tmp && ft_strcmp(tmp->content, "pa") && ft_strcmp(tmp->content, "pb") && ft_strcmp(tmp->content, "sa") && ft_strcmp(tmp->content, "sb"))
+			{
+				if (!ft_strcmp(tmp->content, "rb"))
+				{
+					ft_lstdelone(alst, tmp, &free);
+					str = (char *)(lst->content);
+					str[1] = 'r';
+					break;
+				}
+				tmp = tmp->next;
+			}
+		}
+		else if (!ft_strcmp(lst->content, "rb"))
+		{
+			tmp = lst->next;
+			while (tmp && ft_strcmp(tmp->content, "pa") && ft_strcmp(tmp->content, "pb") && ft_strcmp(tmp->content, "sa") && ft_strcmp(tmp->content, "sb"))
+			{
+				if (!ft_strcmp(tmp->content, "ra"))
+				{
+					ft_lstdelone(alst, tmp, &free);
+					str = (char *)(lst->content);
+					str[1] = 'r';
+					break;
+				}
+				tmp = tmp->next;
+			}
+		}
+		else if (!ft_strcmp(lst->content, "rra"))
+		{
+			tmp = lst->next;
+			while (tmp && ft_strcmp(tmp->content, "pa") && ft_strcmp(tmp->content, "pb") && ft_strcmp(tmp->content, "sa") && ft_strcmp(tmp->content, "sb"))
+			{
+				if (!ft_strcmp(tmp->content, "rrb"))
+				{
+					ft_lstdelone(alst, tmp, &free);
+					str = (char *)(lst->content);
+					str[2] = 'r';
+					break;
+				}
+				tmp = tmp->next;
+			}
+		}
+		else if (!ft_strcmp(lst->content, "rrb"))
+		{
+			tmp = lst->next;
+			while (tmp && ft_strcmp(tmp->content, "pa") && ft_strcmp(tmp->content, "pb") && ft_strcmp(tmp->content, "sa") && ft_strcmp(tmp->content, "sb"))
+			{
+				if (!ft_strcmp(tmp->content, "rra"))
+				{
+					ft_lstdelone(alst, tmp, &free);
+					str = (char *)(lst->content);
+					str[2] = 'r';
+					break;
+				}
+				tmp = tmp->next;
+			}
+		}
+		lst = lst->next;
+	}
+}
+
+void	ft_factorise_cancel_rotate(t_list **alst)
+{
+	t_list	*lst;
+	t_list	*tmp;
+
+	if (!alst || !*alst)
+		return ;
+	lst = *alst;
+	while (lst->next)
+	{
+		if (!ft_strcmp(lst->content, "ra"))
+		{
+			tmp = lst->next;
+			while (tmp && ft_strcmp(tmp->content, "pa") && ft_strcmp(tmp->content, "pb") && ft_strcmp(tmp->content, "sa") && ft_strcmp(tmp->content, "sb"))
+			{
+				if (!ft_strcmp(tmp->content, "rra"))
+				{
+					ft_lstdelone(alst, tmp, &free);
+					tmp = lst;
+					lst = lst->next;
+					ft_lstdelone(alst, tmp, &free);
+					break;
+				}
+				tmp = tmp->next;
+			}
+		}
+		else if (!ft_strcmp(lst->content, "rb"))
+		{
+			tmp = lst->next;
+			while (tmp && ft_strcmp(tmp->content, "pa") && ft_strcmp(tmp->content, "pb") && ft_strcmp(tmp->content, "sa") && ft_strcmp(tmp->content, "sb"))
+			{
+				if (!ft_strcmp(tmp->content, "rrb"))
+				{
+					ft_lstdelone(alst, tmp, &free);
+					tmp = lst;
+					lst = lst->next;
+					ft_lstdelone(alst, tmp, &free);
+					break;
+				}
+				tmp = tmp->next;
+			}
+		}
+		lst = lst->next;
+	}
+}
+
+void	ft_factorise_instruction(t_list **lst)
+{
+	ft_factorise_cancel_rotate(lst);
+	ft_factorise_rotate(lst);
+	ft_factorise_cancel_push(lst);
+}
+
 int	main(int ac, char *av[])
 {
 	int		i;
@@ -1073,9 +1231,11 @@ int	main(int ac, char *av[])
 
 //	printf("Before factoring the instructions list :\n");
 //	ft_lstiter(lst[2], &ft_print_str_data);
-//	printf("After factoring the instructions list :\n");
-//	ft_factorise_instruction(&lst[2]);
+//	printf("nb of instructions : %zu\n", ft_lstsize(lst[2]));
+//	printf("\nAfter factoring the instructions list :\n");
+	ft_factorise_instruction(&lst[2]);
 	ft_lstiter(lst[2], &ft_print_str_data);
+//	printf("nb of instructions : %zu\n", ft_lstsize(lst[2]));
 	free(arr);
 	ft_lstclear(&lst[0], &free);
 	ft_lstclear(&lst[1], &free);
