@@ -18,7 +18,7 @@ void	ft_dlstdelone(t_dlist **alst, t_dlist *to_del, void (*del)(void *))
 	while (tmp && tmp != to_del)
 		tmp = tmp->next;
 	if (!tmp)
-		return;
+		return ;
 	if (tmp->prev)
 		tmp->prev->next = tmp->next;
 	if (tmp->next)

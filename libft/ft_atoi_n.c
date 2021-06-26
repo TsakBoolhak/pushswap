@@ -15,9 +15,9 @@
 
 int	ft_atoi_n(const char *str, size_t n)
 {
-	int	result;
-	int	sign;
-	int	i;
+	int		result;
+	int		sign;
+	int		i;
 	size_t	j;
 
 	i = 0;

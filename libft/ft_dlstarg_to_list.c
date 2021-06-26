@@ -3,7 +3,7 @@
 
 t_dlist	*ft_dlstarg_to_list(int ac, char *av[])
 {
-	int	i;
+	int		i;
 	t_dlist	*lst;
 	t_dlist	*new;
 

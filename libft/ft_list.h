@@ -14,11 +14,11 @@
 # define FT_LIST_H
 # include <stddef.h>
 
-typedef struct	s_list
+typedef struct s_list
 {
 	void			*content;
 	struct s_list	*next;
-}				t_list;
+}t_list;
 
 size_t	ft_lstsize(t_list *lst);
 t_list	*ft_lstnew(void *content);

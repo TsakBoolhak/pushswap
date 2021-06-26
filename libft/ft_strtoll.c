@@ -6,7 +6,7 @@ long long	ft_strtoll(const char *str, char **end)
 	unsigned long long	result;
 	int					i;
 	int					j;
-	int 				sign;
+	int					sign;
 
 	i = 0;
 	j = 0;
@@ -21,7 +21,7 @@ long long	ft_strtoll(const char *str, char **end)
 		if (result > (unsigned long long)(LONG_MAX + (sign == -1)))
 			j = 0;
 		if (result > (unsigned long long)(LONG_MAX + (sign == -1)))
-			break;
+			break ;
 	}
 	if (end && !j)
 		*end = (char *)str;

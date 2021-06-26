@@ -2,7 +2,7 @@
 
 void	ft_dlstadd_after(t_dlist **alst, t_dlist *ref, t_dlist *new)
 {
-	t_dlist *lst;
+	t_dlist	*lst;
 
 	if (!new || !ref || !alst || !*alst)
 		return ;

@@ -4,7 +4,7 @@
 
 t_dlist	*ft_dlstsplit(char const *s, char c)
 {
-	char 	**tab;
+	char	**tab;
 	t_dlist	*lst;
 	t_dlist	*new;
 	size_t	i;
