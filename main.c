@@ -781,6 +781,8 @@ int	main(int ac, char *av[])
 {
 	int		i;
 	t_list	*lst[3];
+	t_list	*original_list;
+	t_list	*best_instruction;
 	size_t	size[2];
 	char	**tab;
 	int		*arr;
@@ -799,6 +801,7 @@ int	main(int ac, char *av[])
 	lst[0] = NULL;
 	lst[1] = NULL;
 	lst[2] = NULL;
+	best_instruction = NULL;
 	ft_memset(size, 0, sizeof(size));
 	if (ac == 2)
 	{
@@ -881,118 +884,187 @@ int	main(int ac, char *av[])
 			ft_lstclear(&lst[0], &free);
 			return (0);
 		}
-		if (size[0] < 250)
-			chunk_size = (int)(size[0]) / 7 + ((int)(size[0]) / 7 < 1);
-		else
-			chunk_size = size[0] / 14;
-		chunk_size_origin= chunk_size;
-		chunk_nb = arr_size / chunk_size + (arr_size % chunk_size != 0);
-//		printf("size[0] = %zu, chunk_nb = %d chunk_size = %d(at begin)\n", size[0], chunk_nb, chunk_size);
-		chunk_i = 1;
-		while (chunk_i <= chunk_nb)
+		original_list = ft_lstdup(lst[0], NULL);
+		if (!original_list)
 		{
-			if (chunk_i == chunk_nb && arr_size % chunk_size)
-				chunk_size = arr_size % chunk_size;
-			first_chosen = ft_pick_from_start(lst[0], arr, chunk_i, chunk_size, chunk_size_origin);
-			last_chosen = ft_pick_from_end(lst[0], arr, chunk_i, chunk_size, chunk_size_origin);
-//			printf("first %d last %d chunk_i %d chunk_nb %d chunk_size %d\n", first_chosen, last_chosen, chunk_i, chunk_nb, chunk_size);
-			if (first_chosen == 0)
+			ft_lstclear(&lst[0], &free);
+			ft_putstr_fd("Error: not enough memory\n", 2);
+			return (0);
+		}
+//		ft_lstiter(lst[0], &ft_print_int_data);
+//		printf("\n\n dup :\n");
+//		ft_lstiter(original_list, &ft_print_int_data);
+		i = 0;
+		while (i < 5)
+		{
+//			size[1] = 0;
+			if (size[0] < 250)
+				chunk_size = (int)(size[0]) / (5 + i) + ((int)(size[0]) / (5 + i) < 1);
+			else
+				chunk_size = size[0] / (12 + i);
+			chunk_size_origin= chunk_size;
+			chunk_nb = arr_size / chunk_size + (arr_size % chunk_size != 0);
+//			printf("size[0] = %zu, chunk_nb = %d chunk_size = %d(at begin)\n", size[0], chunk_nb, chunk_size);
+			chunk_i = 1;
+			while (chunk_i <= chunk_nb)
 			{
-//				printf("when passing to next chun_i : chunk_i = %d, chunk_size = %d, size[0] = %zu\n", chunk_i, chunk_size, size[0]);
-				chunk_i++;
-				continue ;
-			}
-			last_chosen = size[0] - last_chosen + 1;
-			first_chosen--;
-			if (first_chosen <= last_chosen)
-			{
-				while (first_chosen)
+				if (chunk_i == chunk_nb && arr_size % chunk_size)
+					chunk_size = arr_size % chunk_size;
+				first_chosen = ft_pick_from_start(lst[0], arr, chunk_i, chunk_size, chunk_size_origin);
+				last_chosen = ft_pick_from_end(lst[0], arr, chunk_i, chunk_size, chunk_size_origin);
+//				printf("first %d last %d chunk_i %d chunk_nb %d chunk_size %d\n", first_chosen, last_chosen, chunk_i, chunk_nb, chunk_size);
+				if (first_chosen == 0)
 				{
-					if (ft_rotate_a(lst))
+//					printf("when passing to next chun_i : chunk_i = %d, chunk_size = %d, size[0] = %zu\n", chunk_i, chunk_size, size[0]);
+					chunk_i++;
+					continue ;
+				}
+				last_chosen = size[0] - last_chosen + 1;
+				first_chosen--;
+				if (first_chosen <= last_chosen)
+				{
+					while (first_chosen)
+					{
+						if (ft_rotate_a(lst))
+						{
+							free(arr);
+							ft_putstr_fd("Error: not enough memory\n", 2);
+							ft_lstclear(&lst[0], &free);
+							ft_lstclear(&lst[1], &free);
+							ft_lstclear(&lst[2], &free);
+							ft_lstclear(&original_list, &free);
+							ft_lstclear(&best_instruction, &free);
+							return (0);
+						}
+						first_chosen--;
+					}
+				}
+				else
+				{
+					while (last_chosen)
+					{
+						if (ft_reverse_rotate_a(lst))
+						{
+							free(arr);
+							ft_putstr_fd("Error: not enough memory\n", 2);
+							ft_lstclear(&lst[0], &free);
+							ft_lstclear(&lst[1], &free);
+							ft_lstclear(&lst[2], &free);
+							ft_lstclear(&original_list, &free);
+							ft_lstclear(&best_instruction, &free);
+							return (0);
+						}
+						last_chosen--;
+					}
+				}
+				if (ft_prepare_pb(lst, size) || ft_push_b(lst,size))
+				{
+					ft_putstr_fd("Error: not enough memory\n", 2);
+					free(arr);
+					ft_lstclear(&lst[0], &free);
+					ft_lstclear(&lst[1], &free);
+					ft_lstclear(&lst[2], &free);
+					ft_lstclear(&original_list, &free);
+					ft_lstclear(&best_instruction, &free);
+					return (0);
+				}
+			}
+	
+
+//		printf("size[0] = %zu, size[1] = %zu, chunk_size = %d\n", size[0], size[1], chunk_size);
+//		printf("last move\n");
+			ft_search_minmax(lst[1], &chunk_i, &chunk_nb);
+			if (chunk_nb > (int)(size[1] / 2 + size[1] % 2))
+			{
+//				printf("A\n");
+//				printf("%d\n", chunk_nb);
+				chunk_nb = (int)(size[1] - chunk_nb + 2);
+//				printf("%d\n", chunk_nb);
+				while (--chunk_nb)
+				{
+					if (ft_reverse_rotate_b(lst))
 					{
 						free(arr);
 						ft_putstr_fd("Error: not enough memory\n", 2);
 						ft_lstclear(&lst[0], &free);
 						ft_lstclear(&lst[1], &free);
 						ft_lstclear(&lst[2], &free);
+						ft_lstclear(&original_list, &free);
+						ft_lstclear(&best_instruction, &free);
 						return (0);
 					}
-					first_chosen--;
 				}
 			}
 			else
 			{
-				while (last_chosen)
+//				printf("B\n");
+				while (--chunk_nb)
 				{
-					if (ft_reverse_rotate_a(lst))
+					if (ft_rotate_b(lst))
 					{
 						free(arr);
 						ft_putstr_fd("Error: not enough memory\n", 2);
 						ft_lstclear(&lst[0], &free);
 						ft_lstclear(&lst[1], &free);
 						ft_lstclear(&lst[2], &free);
+						ft_lstclear(&original_list, &free);
+						ft_lstclear(&best_instruction, &free);
 						return (0);
 					}
-					last_chosen--;
 				}
 			}
-			if (ft_prepare_pb(lst, size) || ft_push_b(lst,size))
+//			printf("C\n");
+			while (size[1])
 			{
-				ft_putstr_fd("Error: not enough memory\n", 2);
-				free(arr);
-				ft_lstclear(&lst[0], &free);
-				ft_lstclear(&lst[1], &free);
-				ft_lstclear(&lst[2], &free);
-				return (0);
-			}
-		}
-
-
-//		printf("size[0] = %zu, chunk_size = %d\n", size[0], chunk_size);
-//		printf("last move\n");
-		ft_search_minmax(lst[1], &chunk_i, &chunk_nb);
-		if (chunk_nb > (int)(size[1] / 2 + size[1] % 2))
-		{
-			chunk_nb = (int)(size[1] - chunk_nb + 2);
-			while (--chunk_nb)
-			{
-				if (ft_reverse_rotate_b(lst))
+				if (ft_push_a(lst, size))
 				{
 					free(arr);
 					ft_putstr_fd("Error: not enough memory\n", 2);
 					ft_lstclear(&lst[0], &free);
 					ft_lstclear(&lst[1], &free);
 					ft_lstclear(&lst[2], &free);
+					ft_lstclear(&original_list, &free);
+					ft_lstclear(&best_instruction, &free);
 					return (0);
 				}
 			}
-		}
-		else
-		{
-			while (--chunk_nb)
+//			printf("D\n");
+			ft_factorise_instruction(&lst[2]);
+//			printf("i = %d, instructions : %zu\n", i, ft_lstsize(lst[2]));
+			ft_lstclear(&lst[0], NULL);
+			if (!best_instruction || ft_lstsize(lst[2]) < ft_lstsize(best_instruction))
 			{
-				if (ft_rotate_b(lst))
+				ft_lstclear(&best_instruction, &free);
+				best_instruction = ft_lstdup(lst[2], NULL);
+				if (!best_instruction)
 				{
 					free(arr);
 					ft_putstr_fd("Error: not enough memory\n", 2);
-					ft_lstclear(&lst[0], &free);
-					ft_lstclear(&lst[1], &free);
+					ft_lstclear(&lst[0], NULL);
 					ft_lstclear(&lst[2], &free);
+					ft_lstclear(&original_list, &free);
 					return (0);
 				}
+				ft_lstclear(&lst[2], NULL);
 			}
-		}
-		while (size[1])
-		{
-			if (ft_push_a(lst, size))
+			else
+				ft_lstclear(&lst[2], &free);
+//			printf("E\n");
+			ft_lstclear(&lst[0], NULL);
+			lst[2] = NULL;
+			lst[0] = ft_lstdup(original_list, NULL);
+			if (!lst[0])
 			{
 				free(arr);
 				ft_putstr_fd("Error: not enough memory\n", 2);
-				ft_lstclear(&lst[0], &free);
 				ft_lstclear(&lst[1], &free);
-				ft_lstclear(&lst[2], &free);
+				ft_lstclear(&original_list, &free);
+				ft_lstclear(&best_instruction, &free);
 				return (0);
 			}
+			size[0] = ft_lstsize(lst[0]);
+			size[1] = 0;
+			i++;
 		}
 	}
 //	printf("\nafter the sort:\n");
@@ -1233,12 +1305,14 @@ int	main(int ac, char *av[])
 //	ft_lstiter(lst[2], &ft_print_str_data);
 //	printf("nb of instructions : %zu\n", ft_lstsize(lst[2]));
 //	printf("\nAfter factoring the instructions list :\n");
-	ft_factorise_instruction(&lst[2]);
-	ft_lstiter(lst[2], &ft_print_str_data);
+	ft_lstiter(best_instruction, &ft_print_str_data);
 //	printf("nb of instructions : %zu\n", ft_lstsize(lst[2]));
+//	printf("best instructions : %zu\n", ft_lstsize(best_instruction));
 	free(arr);
-	ft_lstclear(&lst[0], &free);
-	ft_lstclear(&lst[1], &free);
-	ft_lstclear(&lst[2], &free);
+	ft_lstclear(&lst[0], NULL);
+	ft_lstclear(&lst[1], NULL);
+//	ft_lstclear(&lst[2], &free);
+	ft_lstclear(&original_list, &free);
+	ft_lstclear(&best_instruction, &free);
 	return (0);
 }
