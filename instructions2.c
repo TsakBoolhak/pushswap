@@ -2,7 +2,7 @@
 #include "pushswap.h"
 #include <stddef.h>
 
-int	ft_rotate_a(t_list *lst[3])
+int	ft_rotate_a(t_list **lst)
 {
 	t_list	*tmp;
 	t_list	*last;
@@ -19,7 +19,7 @@ int	ft_rotate_a(t_list *lst[3])
 	return (0);
 }
 
-int	ft_rotate_b(t_list *lst[3])
+int	ft_rotate_b(t_list **lst)
 {
 	t_list	*tmp;
 	t_list	*last;
@@ -36,7 +36,7 @@ int	ft_rotate_b(t_list *lst[3])
 	return (0);
 }
 
-int	ft_reverse_rotate_a(t_list *lst[3])
+int	ft_reverse_rotate_a(t_list **lst)
 {
 	t_list	*last;
 	t_list	*tmp;
@@ -55,7 +55,7 @@ int	ft_reverse_rotate_a(t_list *lst[3])
 	return (0);
 }
 
-int	ft_reverse_rotate_b(t_list *lst[3])
+int	ft_reverse_rotate_b(t_list **lst)
 {
 	t_list	*last;
 	t_list	*tmp;
@@ -74,7 +74,7 @@ int	ft_reverse_rotate_b(t_list *lst[3])
 	return (0);
 }
 
-int	ft_check_sort_a(t_list *lst[3], size_t size[2])
+int	ft_check_sort_a(t_list **lst, size_t *size)
 {
 	int		nb;
 	t_list	*tmp;

@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 
-int	ft_add_instruction(t_list *lst[3], char *str)
+int	ft_add_instruction(t_list **lst, char *str)
 {
 	char	*copy;
 	t_list	*new_node;
@@ -19,7 +19,7 @@ int	ft_add_instruction(t_list *lst[3], char *str)
 	return (0);
 }
 
-int	ft_swap_a(t_list *lst[3])
+int	ft_swap_a(t_list **lst)
 {
 	t_list	*tmp;
 
@@ -34,7 +34,7 @@ int	ft_swap_a(t_list *lst[3])
 	return (0);
 }
 
-int	ft_swap_b(t_list *lst[3])
+int	ft_swap_b(t_list **lst)
 {
 	t_list	*tmp;
 
@@ -49,7 +49,7 @@ int	ft_swap_b(t_list *lst[3])
 	return (0);
 }
 
-int	ft_push_a(t_list *lst[3], size_t size[2])
+int	ft_push_a(t_list **lst, size_t *size)
 {
 	t_list	*to_push;
 
@@ -66,7 +66,7 @@ int	ft_push_a(t_list *lst[3], size_t size[2])
 	return (0);
 }
 
-int	ft_push_b(t_list *lst[3], size_t size[2])
+int	ft_push_b(t_list **lst, size_t *size)
 {
 	t_list	*to_push;
 

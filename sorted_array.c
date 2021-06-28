@@ -1,4 +1,5 @@
 #include "libft.h"
+#include "pushswap.h"
 
 void	ft_swap(int *a, int *b)
 {
@@ -43,18 +44,18 @@ void	ft_quicksort(int *arr, int first, int last)
 	}
 }
 
-int	ft_pick_from_start(t_list *lst, int *arr, int chunk_i, int chunk_size, int chunk_size_origin)
+int	ft_pick_from_start(t_list *lst, int *arr, t_chunk chunk)
 {
 	int	start;
 	int	end;
 	int	ret;
 
-	start = ((chunk_i - 1) * chunk_size_origin);
-	end = start + chunk_size;
+	start = ((chunk.i - 1) * chunk.size_origin);
+	end = start + chunk.size;
 	ret = 1;
 	while (lst)
 	{
-		start = ((chunk_i - 1) * chunk_size);
+		start = ((chunk.i - 1) * chunk.size);
 		while (start < end)
 		{
 			if (arr[start] == *(int *)(lst->content))
@@ -67,20 +68,20 @@ int	ft_pick_from_start(t_list *lst, int *arr, int chunk_i, int chunk_size, int c
 	return (0);
 }
 
-int	ft_pick_from_end(t_list *lst, int *arr, int chunk_i, int chunk_size, int chunk_size_origin)
+int	ft_pick_from_end(t_list *lst, int *arr, t_chunk chunk)
 {
 	int	start;
 	int	end;
 	int	i;
 	int	ret;
 
-	start = ((chunk_i - 1) * chunk_size_origin);
-	end = start + chunk_size;
+	start = ((chunk.i - 1) * chunk.size_origin);
+	end = start + chunk.size;
 	ret = 0;
 	i = 1;
 	while (lst)
 	{
-		start = ((chunk_i - 1) * chunk_size);
+		start = ((chunk.i - 1) * chunk.size);
 		while (start < end)
 		{
 			if (arr[start] == *(int *)(lst->content))

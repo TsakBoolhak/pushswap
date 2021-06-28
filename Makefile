@@ -2,6 +2,8 @@ SRCS		= main.c \
 			instructions1.c \
 			instructions2.c \
 			minmax.c \
+			tools1.c \
+			factorise_instructions.c \
 			sorted_array.c
 
 OBJS		= ${SRCS:.c=.o}
