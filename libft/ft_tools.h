@@ -21,5 +21,6 @@ long long	ft_strtoll(const char *str, char **end);
 int			ft_check_base(char *base);
 int			ft_get_signed_nb_len(long nb, int base);
 long		ft_abs(long nb);
+size_t		ft_tablen(char **tab);
 
 #endif

@@ -9,6 +9,8 @@ typedef struct s_chunk
 	int	nb;
 	int	size;
 	int	size_origin;
+	int	first_chosen;
+	int	last_chosen;
 }t_chunk;
 
 /*
@@ -64,5 +66,7 @@ void	ft_replace_by_r(t_list **alst, t_list *lst, char *to_find);
 void	ft_factorise_rotate(t_list **alst);
 void	ft_delete_both(t_list **alst, t_list **lst, char *to_find);
 void	ft_factorise_cancel_rotate(t_list **alst);
+
+int		ft_search_forbidden_spaces(const char *str);
 
 #endif

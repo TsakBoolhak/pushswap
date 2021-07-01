@@ -8,6 +8,8 @@ SRCS_MEMORY	= ft_calloc.c \
 			ft_strndup.c \
 			ft_strmapi.c \
 			ft_split.c \
+			ft_splitjoin.c \
+			ft_tabdup.c \
 			ft_free_tab.c \
 			ft_tab_size.c
 
@@ -19,6 +21,7 @@ SRCS_PRINT = ft_putchar_fd.c \
 SRCS_TOOLS 	= ft_atoi.c \
 			ft_atoi_n.c \
 			ft_get_signed_nb_len.c \
+			ft_tablen.c \
 			ft_check_base.c \
 			ft_abs.c \
 			ft_strtoll.c
@@ -61,6 +64,7 @@ SRCS_STRING	= ft_memmove.c \
 			ft_memchr.c \
 			ft_strrchr.c \
 			ft_strchr.c \
+			ft_strchr_charset.c \
 			ft_memset.c \
 			ft_strlcpy.c \
 			ft_strlcat.c \
@@ -88,7 +92,7 @@ NAME		= libft.a
 
 CC			= @gcc
 
-CFLAGS		= -Wall -Wextra -Werror -I.
+CFLAGS		= -g3 -Wall -Wextra -Werror -I.
 
 RM			= rm -f
 

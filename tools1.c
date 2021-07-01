@@ -10,7 +10,7 @@ int	ft_is_nb_valid(t_list **lst, char *str)
 	int			*data;
 	t_list		*new;
 
-	if (!ft_isdigit(*str) && *str != '-')
+	if (ft_search_forbidden_spaces(str))
 		return (-1);
 	nbr = ft_strtoll(str, &end);
 	if (end == str || *end || nbr > INT_MAX || nbr < INT_MIN)

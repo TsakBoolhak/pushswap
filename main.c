@@ -3,6 +3,26 @@
 #include <stdlib.h>
 #include <limits.h>
 
+int	ft_search_forbidden_spaces(const char *str)
+{
+	char	forbidden;
+	char	forbidden_spaces[6];
+	int		i;
+
+	i = 0;
+	forbidden = 9;
+	while (i < 5)
+	{
+		forbidden_spaces[i] = forbidden;
+		forbidden++;
+		i++;
+	}
+	forbidden_spaces[i] = '\0';
+	if (ft_strchr_charset(str, forbidden_spaces))
+		return (1);
+	return (0);
+}
+
 int	ft_sort_three(t_list **lst, size_t size[2])
 {
 	int	min;
@@ -60,19 +80,66 @@ void	ft_factorise_instruction(t_list **lst)
 	ft_factorise_cancel_push(lst);
 }
 
+char	**ft_args_to_split(int ac, char **av)
+{
+	char	**tab[3];
+	int		i;
+
+	i = 0;
+	tab[2] = NULL;
+	while (++i < ac)
+	{
+		tab[0] = ft_split(av[i], ' ');
+		if (!tab[0])
+		{
+			ft_free_tab((void *)tab[2]);
+			return (NULL);
+		}
+		tab[1] = ft_splitjoin(tab[2], tab[0]);
+		if (!tab[1])
+		{
+			ft_free_tab((void *)tab[2]);
+			ft_free_tab((void *)tab[0]);
+			return (NULL);
+		}
+		free(tab[2]);
+		free(tab[0]);
+		tab[2] = tab[1];
+	}
+	return (tab[2]);
+}
+
+int	ft_check_args(int ac, char **av, t_list **lst)
+{
+	int		i;
+	char	**tab;
+
+	tab = ft_args_to_split(ac, av);
+	if (!tab)
+		return (-1);
+	i = 0;
+	while (tab[i])
+	{
+		if (ft_is_nb_valid(&lst[0], tab[i]))
+		{
+			ft_free_tab((void **)tab);
+			ft_lstclear(&lst[0], &free);
+			return (-1);
+		}
+		i++;
+	}
+	ft_free_tab((void **)tab);
+	return (0);
+}
+
 int	main(int ac, char *av[])
 {
 	int		i;
 	t_list	*lst[5];
 	size_t	size[3];
-	char	**tab;
 	int		*arr;
 	t_chunk	chunk;
-	int		first_chosen;
-	int		last_chosen;
 
-	if (ac < 2)
-		return (0);
 	i = 1;
 	arr = NULL;
 	lst[0] = NULL;
@@ -81,42 +148,13 @@ int	main(int ac, char *av[])
 	lst[3] = NULL;
 	lst[4] = NULL;
 	ft_memset(size, 0, sizeof(size));
-	ft_memset(size, 0, sizeof(chunk));
-	if (ac == 2)
+	ft_memset(&chunk, 0, sizeof(chunk));
+	if (ac < 2)
+		return (0);
+	else if (ft_check_args(ac, av, lst))
 	{
-		tab = ft_split(av[1], ' ');
-		if (!tab || !*tab)
-		{
-			ft_free_tab((void **)tab);
-			ft_putstr_fd("Error\n", 2);
-			return (0);
-		}
-		i = 0;
-		while (tab[i])
-		{
-			if (ft_is_nb_valid(&lst[0], tab[i]))
-			{
-				ft_putstr_fd("Error\n", 2);
-				ft_free_tab((void **)tab);
-				ft_lstclear(&lst[0], &free);
-				return (0);
-			}
-			i++;
-		}
-		ft_free_tab((void **)tab);
-	}
-	else
-	{
-		while (av[i])
-		{
-			if (ft_is_nb_valid(&lst[0], av[i]))
-			{
-				ft_putstr_fd("Error\n", 2);
-				ft_lstclear(&lst[0], &free);
-				return (0);
-			}
-			i++;
-		}
+		ft_putstr_fd("Error\n", 2);
+		return (0);
 	}
 	size[0] = ft_lstsize(lst[0]);
 	if (size[0] < 4)
@@ -188,18 +226,18 @@ int	main(int ac, char *av[])
 			{
 				if (chunk.i == chunk.nb && (int)(size[2]) % chunk.size)
 					chunk.size = (int)(size[2]) % chunk.size;
-				first_chosen = ft_pick_from_start(lst[0], arr, chunk);
-				last_chosen = ft_pick_from_end(lst[0], arr, chunk);
-				if (first_chosen == 0)
+				chunk.first_chosen = ft_pick_from_start(lst[0], arr, chunk);
+				chunk.last_chosen = ft_pick_from_end(lst[0], arr, chunk);
+				if (chunk.first_chosen == 0)
 				{
 					chunk.i++;
 					continue ;
 				}
-				last_chosen = (int)(size[0]) - last_chosen + 1;
-				first_chosen--;
-				if (first_chosen <= last_chosen)
+				chunk.last_chosen = (int)(size[0]) - chunk.last_chosen + 1;
+				chunk.first_chosen--;
+				if (chunk.first_chosen <= chunk.last_chosen)
 				{
-					while (first_chosen)
+					while (chunk.first_chosen)
 					{
 						if (ft_rotate_a(lst))
 						{
@@ -212,12 +250,12 @@ int	main(int ac, char *av[])
 							ft_lstclear(&lst[4], &free);
 							return (0);
 						}
-						first_chosen--;
+						chunk.first_chosen--;
 					}
 				}
 				else
 				{
-					while (last_chosen)
+					while (chunk.last_chosen)
 					{
 						if (ft_reverse_rotate_a(lst))
 						{
@@ -230,7 +268,7 @@ int	main(int ac, char *av[])
 							ft_lstclear(&lst[4], &free);
 							return (0);
 						}
-						last_chosen--;
+						chunk.last_chosen--;
 					}
 				}
 				if (ft_prepare_pb(lst, size) || ft_push_b(lst, size))
