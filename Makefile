@@ -3,7 +3,11 @@ SRCS		= main.c \
 			instructions2.c \
 			minmax.c \
 			tools1.c \
+			tools2.c \
 			factorise_instructions.c \
+			initialisations.c \
+			core_functions.c \
+			big_sort.c \
 			sorted_array.c
 
 OBJS		= ${SRCS:.c=.o}
@@ -35,4 +39,3 @@ fclean:			clean
 re:				fclean all
 
 .PHONY:			all clean fclean re
-
