@@ -132,6 +132,45 @@ int	ft_check_args(int ac, char **av, t_list **lst)
 	return (0);
 }
 
+void	ft_initialise(t_list **lst, size_t *size, int **arr, t_chunk *chunk)
+{
+	int	i;
+
+	i = 0;
+	*arr = NULL;
+	ft_memset(chunk, 0, sizeof(*chunk));
+	ft_memset(size, 0, sizeof(*size) * 3);
+	while (i < 5)
+	{
+		lst[i] = NULL;
+		i++;
+	}
+}
+
+int	ft_error_shutdown(t_list **lst, int **arr)
+{
+	free(*arr);
+	ft_putstr_fd("Error\n", 2);
+	ft_lstclear(&lst[0], NULL);
+	ft_lstclear(&lst[1], NULL);
+	ft_lstclear(&lst[2], &free);
+	ft_lstclear(&lst[3], &free);
+	ft_lstclear(&lst[4], &free);
+	return (0);
+}
+
+int	ft_print_n_quit(t_list **lst, int **arr)
+{
+	ft_lstiter(lst[4], &ft_print_str_data);
+	free(*arr);
+	ft_lstclear(&lst[0], NULL);
+	ft_lstclear(&lst[1], NULL);
+	ft_lstclear(&lst[2], NULL);
+	ft_lstclear(&lst[3], &free);
+	ft_lstclear(&lst[4], &free);
+	return (0);
+}
+
 int	main(int ac, char *av[])
 {
 	int		i;
@@ -140,15 +179,7 @@ int	main(int ac, char *av[])
 	int		*arr;
 	t_chunk	chunk;
 
-	i = 1;
-	arr = NULL;
-	lst[0] = NULL;
-	lst[1] = NULL;
-	lst[2] = NULL;
-	lst[3] = NULL;
-	lst[4] = NULL;
-	ft_memset(size, 0, sizeof(size));
-	ft_memset(&chunk, 0, sizeof(chunk));
+	ft_initialise(lst, size, &arr, &chunk);
 	if (ac < 2)
 		return (0);
 	else if (ft_check_args(ac, av, lst))
@@ -157,37 +188,16 @@ int	main(int ac, char *av[])
 		return (0);
 	}
 	size[0] = ft_lstsize(lst[0]);
-	if (size[0] < 4)
+	if (size[0] < 10)
 	{
-		if (ft_sort_three(lst, size))
-		{
-			ft_putstr_fd("Error\n", 2);
-			ft_lstclear(&lst[0], &free);
-			ft_lstclear(&lst[1], &free);
-			ft_lstclear(&lst[2], &free);
-			return (0);
-		}
+		lst[3] = ft_lstdup(lst[0], NULL);
+		if (!lst[3] || ft_sort_five(lst, size))
+			return (ft_error_shutdown(lst, &arr));
 		ft_factorise_instruction(&lst[2]);
-		ft_lstiter(lst[2], &ft_print_str_data);
-		ft_lstclear(&lst[0], &free);
-		ft_lstclear(&lst[2], &free);
-		return (0);
-	}
-	else if (size[0] < 6)
-	{
-		if (ft_sort_five(lst, size))
-		{
-			ft_putstr_fd("Error\n", 2);
-			ft_lstclear(&lst[0], &free);
-			ft_lstclear(&lst[1], &free);
-			ft_lstclear(&lst[2], &free);
-			return (0);
-		}
-		ft_factorise_instruction(&lst[2]);
-		ft_lstiter(lst[2], &ft_print_str_data);
-		ft_lstclear(&lst[0], &free);
-		ft_lstclear(&lst[2], &free);
-		return (0);
+		lst[4] = ft_lstdup(lst[2], NULL);
+		if (!lst[4])
+			return (ft_error_shutdown(lst, &arr));
+		return (ft_print_n_quit(lst, &arr));
 	}
 	else
 	{
@@ -197,26 +207,15 @@ int	main(int ac, char *av[])
 			return (0);
 		}
 		size[2] = size[0];
-		arr = ft_get_arr_from_list(lst[0], size[2]);
-		if (!arr)
-		{
-			ft_putstr_fd("Error\n", 2);
-			ft_lstclear(&lst[0], &free);
-			return (0);
-		}
 		lst[3] = ft_lstdup(lst[0], NULL);
-		if (!lst[3])
-		{
-			free(arr);
-			ft_lstclear(&lst[0], &free);
-			ft_putstr_fd("Error\n", 2);
-			return (0);
-		}
+		arr = ft_get_arr_from_list(lst[0], size[2]);
+		if (!lst[3] || !arr)
+			return (ft_error_shutdown(lst, &arr));
 		i = 0;
 		while (i < 5)
 		{
 			if (size[0] < 250)
-				chunk.size = (int)(size[0]) / (5 + i) + ((int)(size[0]) / (5 + i) < 1);
+				chunk.size = (int)(size[0]) / (5 + i);
 			else
 				chunk.size = (int)(size[0]) / (12 + i);
 			chunk.size_origin = chunk.size;
@@ -240,16 +239,7 @@ int	main(int ac, char *av[])
 					while (chunk.first_chosen)
 					{
 						if (ft_rotate_a(lst))
-						{
-							free(arr);
-							ft_putstr_fd("Error\n", 2);
-							ft_lstclear(&lst[0], NULL);
-							ft_lstclear(&lst[1], NULL);
-							ft_lstclear(&lst[2], &free);
-							ft_lstclear(&lst[3], &free);
-							ft_lstclear(&lst[4], &free);
-							return (0);
-						}
+							return (ft_error_shutdown(lst, &arr));
 						chunk.first_chosen--;
 					}
 				}
@@ -258,30 +248,12 @@ int	main(int ac, char *av[])
 					while (chunk.last_chosen)
 					{
 						if (ft_reverse_rotate_a(lst))
-						{
-							free(arr);
-							ft_putstr_fd("Error\n", 2);
-							ft_lstclear(&lst[0], NULL);
-							ft_lstclear(&lst[1], NULL);
-							ft_lstclear(&lst[2], &free);
-							ft_lstclear(&lst[3], &free);
-							ft_lstclear(&lst[4], &free);
-							return (0);
-						}
+							return (ft_error_shutdown(lst, &arr));
 						chunk.last_chosen--;
 					}
 				}
 				if (ft_prepare_pb(lst, size) || ft_push_b(lst, size))
-				{
-					ft_putstr_fd("Error\n", 2);
-					free(arr);
-					ft_lstclear(&lst[0], NULL);
-					ft_lstclear(&lst[1], NULL);
-					ft_lstclear(&lst[2], &free);
-					ft_lstclear(&lst[3], &free);
-					ft_lstclear(&lst[4], &free);
-					return (0);
-				}
+					return (ft_error_shutdown(lst, &arr));
 			}
 			ft_search_minmax(lst[1], &chunk.i, &chunk.nb);
 			if (chunk.nb > (int)(size[1] / 2 + size[1] % 2))
@@ -290,16 +262,7 @@ int	main(int ac, char *av[])
 				while (--chunk.nb)
 				{
 					if (ft_reverse_rotate_b(lst))
-					{
-						free(arr);
-						ft_putstr_fd("Error\n", 2);
-						ft_lstclear(&lst[0], NULL);
-						ft_lstclear(&lst[1], NULL);
-						ft_lstclear(&lst[2], &free);
-						ft_lstclear(&lst[3], &free);
-						ft_lstclear(&lst[4], &free);
-						return (0);
-					}
+						return (ft_error_shutdown(lst, &arr));
 				}
 			}
 			else
@@ -307,31 +270,13 @@ int	main(int ac, char *av[])
 				while (--chunk.nb)
 				{
 					if (ft_rotate_b(lst))
-					{
-						free(arr);
-						ft_putstr_fd("Error\n", 2);
-						ft_lstclear(&lst[0], NULL);
-						ft_lstclear(&lst[1], NULL);
-						ft_lstclear(&lst[2], &free);
-						ft_lstclear(&lst[3], &free);
-						ft_lstclear(&lst[4], &free);
-						return (0);
-					}
+						return (ft_error_shutdown(lst, &arr));
 				}
 			}
 			while (size[1])
 			{
 				if (ft_push_a(lst, size))
-				{
-					free(arr);
-					ft_putstr_fd("Error\n", 2);
-					ft_lstclear(&lst[0], NULL);
-					ft_lstclear(&lst[1], NULL);
-					ft_lstclear(&lst[2], &free);
-					ft_lstclear(&lst[3], &free);
-					ft_lstclear(&lst[4], &free);
-					return (0);
-				}
+					return (ft_error_shutdown(lst, &arr));
 			}
 			ft_factorise_instruction(&lst[2]);
 			ft_lstclear(&lst[0], NULL);
@@ -340,39 +285,19 @@ int	main(int ac, char *av[])
 				ft_lstclear(&lst[4], &free);
 				lst[4] = ft_lstdup(lst[2], NULL);
 				if (!lst[4])
-				{
-					free(arr);
-					ft_putstr_fd("Error\n", 2);
-					ft_lstclear(&lst[0], NULL);
-					ft_lstclear(&lst[2], &free);
-					ft_lstclear(&lst[3], &free);
-					return (0);
-				}
+					return (ft_error_shutdown(lst, &arr));
 				ft_lstclear(&lst[2], NULL);
 			}
 			else
 				ft_lstclear(&lst[2], &free);
 			ft_lstclear(&lst[0], NULL);
-			lst[2] = NULL;
 			lst[0] = ft_lstdup(lst[3], NULL);
 			if (!lst[0])
-			{
-				free(arr);
-				ft_putstr_fd("Error\n", 2);
-				ft_lstclear(&lst[3], &free);
-				ft_lstclear(&lst[4], &free);
-				return (0);
-			}
+				return (ft_error_shutdown(lst, &arr));
 			size[0] = size[2];
 			size[1] = 0;
 			i++;
 		}
 	}
-	ft_lstiter(lst[4], &ft_print_str_data);
-	free(arr);
-	ft_lstclear(&lst[0], NULL);
-	ft_lstclear(&lst[1], NULL);
-	ft_lstclear(&lst[3], &free);
-	ft_lstclear(&lst[4], &free);
-	return (0);
+	return (ft_print_n_quit(lst, &arr));
 }

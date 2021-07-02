@@ -1,10 +1,10 @@
 #! /bin/bash
 
 max=0
-test_nb=1000
-value_nb=5
+test_nb=10000
+value_nb=9
 min_val=1
-max_val=5
+max_val=9
 for i in `seq 1 $test_nb`
 do
 	arg=`shuf -i $min_val-$max_val -n $value_nb`
